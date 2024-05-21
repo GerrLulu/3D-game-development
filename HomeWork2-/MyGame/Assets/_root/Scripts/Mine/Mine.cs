@@ -12,13 +12,14 @@ namespace MineItem
         [SerializeField] private AudioClip[] _audioClips;
 
         private AudioSource _audioSours;
-        //private Transform target;
+        private ParticleSystem _particle;
         //[SerializeField] GameObject explosionPartical;
 
 
         private void Awake()
         {
             _audioSours = GetComponent<AudioSource>();
+            _particle = GetComponent<ParticleSystem>();
         }
 
         private void Start ()
@@ -46,8 +47,9 @@ namespace MineItem
 
                 AudioClip clip = _audioClips[Random.Range(0, _audioClips.Length)];
                 _audioSours.clip = clip;
-                Debug.Log(_audioSours.clip);
                 _audioSours.Play();
+
+                _particle.Play();
 
                 //Instantiate(explosionPartical, transform.position, transform.rotation);
 

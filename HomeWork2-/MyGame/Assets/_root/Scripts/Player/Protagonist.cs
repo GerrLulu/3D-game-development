@@ -1,6 +1,5 @@
 using Bullet;
 using Doors;
-using Menu;
 using MineItem;
 using System.Collections;
 using UnityEngine;
@@ -43,7 +42,6 @@ namespace Player
         private Vector3 _direction;
         private Rigidbody _rb;
         private Animator _animator;
-        
 
         public int Hp
         {
@@ -51,15 +49,6 @@ namespace Player
             set { _hp = value; }
         }
         public bool IsHaveBlueCard { get { return _isHaveBlueCard; } }
-
-        /*private void OnGUI()
-        {
-            GUI.BeginGroup(new Rect(10, 10, 400, 100));
-            GUI.Box(new Rect(10, 10, 400, 100), "Player Life");
-            GUI.TextField(new Rect(10, 20, 40, 30) ,"" + hp);
-            GUI.HorizontalSlider(new Rect(15, 70, 380, 40), hp, 0.0f ,100.0f);
-            GUI.EndClip();
-        }*/
 
 
         private void Awake()

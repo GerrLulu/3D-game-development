@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Bullet
@@ -7,17 +8,17 @@ namespace Bullet
         [SerializeField] private int _damage = 10;
         [SerializeField] private float _speed = 1f;
         [SerializeField] private float _lifeTime = 10f;
+        [SerializeField] private float _lightTime = 0.02f;
         [SerializeField] private AudioClip[] _audioClipsImpact;
 
         private AudioSource _audioSource;
-
-        //[SerializeField] private Light lightFlash;
-        //[SerializeField] private float lightTime = 0.02f;
+        private Light _lightFlash;
 
 
         private void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
+            _lightFlash = GetComponent<Light>();
         }
 
         void FixedUpdate()
@@ -44,17 +45,17 @@ namespace Bullet
             Debug.Log(_audioSource.clip);
             _audioSource.Play();
 
-            //StartCoroutine(LightFlash());
+            StartCoroutine(LightFlash());
         }
 
 
-        //private IEnumerator LightFlash()
-        //{
-        //    lightFlash.GetComponent<Light>().enabled = true;
+        private IEnumerator LightFlash()
+        {
+            _lightFlash.enabled = true;
 
-        //    yield return new WaitForSeconds(lightTime);
+            yield return new WaitForSeconds(_lightTime);
 
-        //    lightFlash.GetComponent<Light>().enabled = false;
-        //}
+            _lightFlash.enabled = false;
+        }
     }
 }

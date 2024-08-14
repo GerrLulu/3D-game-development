@@ -9,12 +9,14 @@ namespace Enemies
     public class Enemy : MonoBehaviour, IMineExplosion, IBulletDamage/*, TrapDamage*/
     {
         [SerializeField] private int _hp = 100;
+        [SerializeField] private int _damage = 5;
         [SerializeField] private float _huntingDistance = 5f;
+        [SerializeField] private float _atackDistance = 0.3f;
+        [SerializeField] private float _speedWalk = 1;
+        [SerializeField] private float _speedRun = 2;
         [SerializeField] private Transform[] _wayPoints;
         [SerializeField] private Transform _eyePosition;
         [SerializeField] private Protagonist _protagonist;
-        //[SerializeField] private int _damage = 5;
-        //[SerializeField] private float _atackDistance = 0.5f;
 
         private int m_CurrentWaypointIndex;
         private Ray _rayToPlayer;
@@ -37,6 +39,8 @@ namespace Enemies
 
         private void FixedUpdate()
         {
+            _animator.SetFloat("Speed", _agent.speed);
+
             RaycastHit hit;
 
             Vector3 direction = _protagonist.transform.position - _eyePosition.position;
@@ -46,24 +50,20 @@ namespace Enemies
 
             if (hit.collider != null)
             {
-                if (hit.distance <= _huntingDistance)
+                if (_atackDistance <= hit.distance && hit.distance <= _huntingDistance)
                 {
+                    _agent.speed = _speedRun;
                     _agent.SetDestination(_protagonist.transform.position);
                     Debug.DrawRay(_eyePosition.position, direction, Color.red);
-
-                    _animator.SetBool("IsRun", true);
-
-                    //if (hit.distance <= _atackDistance)
-                    //    _animator.SetBool("IaAtack", true);
-                    //else
-                    //    _animator.SetBool("IaAtack", false);
+                }
+                else if (0 < hit.distance && hit.distance < _atackDistance)
+                {
+                    _animator.SetTrigger("Attack");
                 }
                 else
                 {
                     Patrol();
                     Debug.DrawRay(_eyePosition.position, direction, Color.green);
-
-                    _animator.SetBool("IsRun", false);
                 }
             }
         }
@@ -73,6 +73,7 @@ namespace Enemies
         {
             if (_agent.remainingDistance < _agent.stoppingDistance)
             {
+                _agent.speed = _speedWalk;
                 m_CurrentWaypointIndex = (m_CurrentWaypointIndex + 1) % _wayPoints.Length;
                 _agent.SetDestination(_wayPoints[m_CurrentWaypointIndex].position);
             }
@@ -97,9 +98,9 @@ namespace Enemies
             DieEnemy(_hp);
         }
 
-        private void Atack(int damage)
+        private void Attack()
         {
-            _protagonist.Hp -= damage;
+            _protagonist.Hp -= _damage;
         }
 
         private void DieEnemy(int hp)
@@ -107,6 +108,7 @@ namespace Enemies
             if (hp <= 0)
             {
                 _animator.SetTrigger("Die");
+                _agent.speed = 0;
                 //Destroy(gameObject);
             }
         }

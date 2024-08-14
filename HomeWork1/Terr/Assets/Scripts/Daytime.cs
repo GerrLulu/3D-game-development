@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Daytime
 {
-    //[ExecuteInEditMode]
+    [ExecuteInEditMode]
     public class Daytime : MonoBehaviour
     {
         [SerializeField] private Gradient _dirLightGradient;

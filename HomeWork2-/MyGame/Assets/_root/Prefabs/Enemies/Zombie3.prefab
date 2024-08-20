@@ -942,7 +942,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hp: 100
+  _damage: 5
   _huntingDistance: 3
+  _atackDistance: 0.3
   _speedWalk: 1
   _speedRun: 2
   _wayPoints:

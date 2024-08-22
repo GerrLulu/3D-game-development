@@ -1,5 +1,6 @@
 using Bullet;
 using Doors;
+using Item;
 using MineItem;
 using System.Collections;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Player
 {
-    public class Protagonist : MonoBehaviour, IMineExplosion, IBulletDamage/*, TrapDamage, ForseHeal*/
+    public class Protagonist : MonoBehaviour, IMineExplosion, IBulletDamage, IHeal/*, TrapDamage,*/
     {
         [SerializeField] private int _hp = 100;
         [SerializeField] private float _speed = 0.1f;
@@ -192,6 +193,13 @@ namespace Player
             DieProtagonist(_hp);
         }
 
+        public void Heal(int hp)
+        {
+            _hp += hp;
+            if (hp > 100)
+                _hp = 100;
+        }
+
         private void GetBlueCard()
         {
             _isHaveBlueCard = true;
@@ -267,13 +275,6 @@ namespace Player
         //    _hp = _hp - damage;
         //    if (_hp <= 0)
         //        _animator.SetTrigger("Die");
-        //}
-
-        //public void hpUp(float _hp)
-        //{
-        //    this._hp += _hp;
-        //    if (this._hp > 100)
-        //        this._hp = 100;
         //}
 
 

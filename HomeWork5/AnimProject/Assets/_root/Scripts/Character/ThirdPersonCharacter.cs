@@ -81,10 +81,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 						m_Animator.SetIKRotation(AvatarIKGoal.LeftHand, _leftHandObj.rotation);
 					}
 				}
-
-				// ≈сли IK неактивен, ставим позицию и вращение рук и головы в изначальное положение
-				else
-				{
+                else // ≈сли IK неактивен, ставим позицию и вращение рук и головы в изначальное положение
+                {
 					m_Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0);
 					m_Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0);
 					m_Animator.SetLookAtWeight(0);

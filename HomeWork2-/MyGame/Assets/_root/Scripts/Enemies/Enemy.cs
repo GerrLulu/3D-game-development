@@ -107,10 +107,23 @@ namespace Enemies
         {
             if (hp <= 0)
             {
-                _animator.SetTrigger("Die");
-                _agent.speed = 0;
+                //_animator.SetTrigger("Die");
+                _animator.enabled = false;
+                _agent.isStopped = true;
+
+                DollDie();
                 //Destroy(gameObject);
             }
+        }
+
+        private void DollDie()
+        {
+            Collider[] colliders = GetComponentsInChildren<Collider>();
+            foreach (Collider collider in colliders)
+            {
+                collider.enabled = true;
+            }
+            GetComponent<Collider>().enabled = false;
         }
 
         //public void TrapHit(float damage)

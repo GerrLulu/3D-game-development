@@ -5,29 +5,31 @@ namespace MineItem
 {
     public class Mine : MonoBehaviour
     {
-        [SerializeField] private int _damage = 30;
-        [SerializeField] private float _lifeTime = 5f;
-        [SerializeField] private float _radiusExplosion = 8f;
-        [SerializeField] private float _force = 1000f;
-        [SerializeField] private float _lightTime = 0.02f;
+        [SerializeField] private int _damage;
+
+        [SerializeField] private float _lifeTime;
+        [SerializeField] private float _radiusExplosion;
+        [SerializeField] private float _force;
+        [SerializeField] private float _lightTime;
+
         [SerializeField] private AudioClip[] _audioClips;
 
+
         private AudioSource _audioSours;
-        private ParticleSystem _particle;
+
+        private ParticleSystem _particleSystem;
+
         private Light _light;
 
 
         private void Awake()
         {
             _audioSours = GetComponent<AudioSource>();
-            _particle = GetComponent<ParticleSystem>();
-            _light = GetComponent<Light>();
+            _particleSystem = GetComponentInChildren<ParticleSystem>();
+            _light = GetComponentInChildren<Light>();
         }
 
-        private void Start ()
-        {
-            StartCoroutine("TimeToDie");
-        }
+        private void Start () => StartCoroutine("TimeToDie");
 
         private void OnTriggerEnter(Collider other)
         {
@@ -41,9 +43,7 @@ namespace MineItem
                     if (hit.TryGetComponent<IMineExplosion>(out obj))
                     {
                         if (obj != null)
-                        {
                             obj.MineHit(_damage, _force, transform.position);
-                        }
                     }
                 }
 
@@ -52,7 +52,7 @@ namespace MineItem
                 _audioSours.Play();
 
                 StartCoroutine(LightFlash());
-                _particle.Play();
+                _particleSystem.Play(true);
 
                 Destroy(gameObject);
             }

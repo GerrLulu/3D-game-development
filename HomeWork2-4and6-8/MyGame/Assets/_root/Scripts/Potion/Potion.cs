@@ -9,10 +9,7 @@ namespace Item
         private Rigidbody _rb;
 
 
-        void Awake()
-        {
-            _rb = GetComponent<Rigidbody>();
-        }
+        void Awake() => _rb = GetComponent<Rigidbody>();
 
         private void OnTriggerEnter(Collider other)
         {

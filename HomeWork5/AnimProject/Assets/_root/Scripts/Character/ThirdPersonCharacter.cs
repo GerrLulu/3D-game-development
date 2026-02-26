@@ -29,11 +29,22 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		CapsuleCollider m_Capsule;
 		bool m_Crouching;
 
+		//Р”Р»СЏ IK
 		[SerializeField] private bool _ikActive = false;
 		[SerializeField] private Transform _rightHandObj = null;
 		[SerializeField] private Transform _leftHandObj = null;
 		[SerializeField] private Transform _lookObj = null;
 		[SerializeField] private float _radius = 2f;
+
+		//Foot IK
+		[SerializeField] private LayerMask _rayLayer;
+		[SerializeField] private Transform _footR, _footL;
+		[SerializeField] private Vector3 _footLoffset, _footRoffset;
+
+		private float _weightFoot_L, _weightFoot_R;
+		
+		private Vector3 _footPosL, _footPosR;
+
 
 		void Start()
 		{
@@ -47,25 +58,20 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
 		}
 
-		//Вызывается при расчёте IK
 		void OnAnimatorIK()
 		{
 			if (m_Animator)
 			{
-
-				//Если, мы включили IK, устанавливаем позицию и вращение
 				if (_ikActive)
 				{
 
-					// Устанавливаем цель взгляда для головы
 					if (_lookObj != null && Vector3.Distance(_lookObj.position, transform.position) < _radius)
 					{
 						m_Animator.SetLookAtWeight(1);
 						m_Animator.SetLookAtPosition(_lookObj.position);
 					}
 
-					// Устанавливаем цель для правой руки и выставляем её в позицию
-					if (_rightHandObj != null)
+					if (_rightHandObj != null && Vector3.Distance(_lookObj.position, transform.position) < _radius)
 					{
 						m_Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
 						m_Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
@@ -73,7 +79,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 						m_Animator.SetIKRotation(AvatarIKGoal.RightHand, _rightHandObj.rotation);
 					}
 
-					if(_leftHandObj != null)
+					if(_leftHandObj != null && Vector3.Distance(_lookObj.position, transform.position) < _radius)
 					{
 						m_Animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
 						m_Animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
@@ -81,14 +87,47 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 						m_Animator.SetIKRotation(AvatarIKGoal.LeftHand, _leftHandObj.rotation);
 					}
 				}
-                else // Если IK неактивен, ставим позицию и вращение рук и головы в изначальное положение
+                else
                 {
 					m_Animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0);
 					m_Animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0);
 					m_Animator.SetLookAtWeight(0);
 				}
+
+				_weightFoot_R = m_Animator.GetFloat("Right_leg");
+				_weightFoot_L = m_Animator.GetFloat("Left_leg");
+
+				LegsIK();
 			}
 		}
+
+		void LegsIK()
+		{
+			m_Animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, _weightFoot_L);
+			m_Animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, _weightFoot_L);
+			m_Animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, _weightFoot_R);
+			m_Animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, _weightFoot_R);
+
+			RaycastHit hit;
+			_footPosL = m_Animator.GetIKPosition(AvatarIKGoal.LeftFoot);
+
+			if (Physics.Raycast(_footPosL + Vector3.up, Vector3.down, out hit, 2.0f, _rayLayer))
+			{
+				Debug.DrawLine(hit.point, hit.point + hit.normal, Color.yellow);
+				m_Animator.SetIKPosition(AvatarIKGoal.LeftFoot, hit.point + _footLoffset);
+				m_Animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(Vector3.ProjectOnPlane(_footL.forward, hit.normal), hit.normal));
+				_footPosL = hit.point;
+			}
+
+            _footPosR = m_Animator.GetIKPosition(AvatarIKGoal.RightFoot);
+
+            if (Physics.Raycast(_footPosR + Vector3.up, Vector3.down, out hit, 2.0f, _rayLayer))
+            {
+                m_Animator.SetIKPosition(AvatarIKGoal.RightFoot, hit.point + _footRoffset);
+                m_Animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(Vector3.ProjectOnPlane(_footR.forward, hit.normal), hit.normal));
+                _footPosR = hit.point;
+            }
+        }
 
 		public void Move(Vector3 move, bool crouch, bool jump)
 		{
@@ -171,7 +210,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			m_Animator.SetBool("OnGround", m_IsGrounded);
 			if (!m_IsGrounded)
 			{
-				m_Animator.SetFloat("Jump", m_Rigidbody.velocity.y);
+				m_Animator.SetFloat("Jump", m_Rigidbody.linearVelocity.y);
 			}
 
 			// calculate which leg is behind, so as to leave that leg trailing in the jump animation
@@ -206,7 +245,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 			m_Rigidbody.AddForce(extraGravityForce);
 
-			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
+			m_GroundCheckDistance = m_Rigidbody.linearVelocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 		}
 
 
@@ -216,7 +255,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
 			{
 				// jump!
-				m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);
+				m_Rigidbody.linearVelocity = new Vector3(m_Rigidbody.linearVelocity.x, m_JumpPower, m_Rigidbody.linearVelocity.z);
 				m_IsGrounded = false;
 				m_Animator.applyRootMotion = false;
 				m_GroundCheckDistance = 0.1f;
@@ -240,8 +279,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
 
 				// we preserve the existing y part of the current velocity.
-				v.y = m_Rigidbody.velocity.y;
-				m_Rigidbody.velocity = v;
+				v.y = m_Rigidbody.linearVelocity.y;
+				m_Rigidbody.linearVelocity = v;
 			}
 		}
 

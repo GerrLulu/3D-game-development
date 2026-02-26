@@ -5,13 +5,17 @@ namespace Bullet
 {
     public class Bullet : MonoBehaviour
     {
-        [SerializeField] private int _damage = 10;
-        [SerializeField] private float _speed = 1f;
-        [SerializeField] private float _lifeTime = 10f;
-        [SerializeField] private float _lightTime = 0.02f;
+        [SerializeField] private int _damage;
+
+        [SerializeField] private float _speed;
+        [SerializeField] private float _lifeTime;
+        [SerializeField] private float _lightTime;
+
         [SerializeField] private AudioClip[] _audioClipsImpact;
 
+
         private AudioSource _audioSource;
+
         private Light _lightFlash;
 
 
@@ -34,18 +38,16 @@ namespace Bullet
             if (other.TryGetComponent<IBulletDamage>(out obj))
             {
                 if (obj != null)
-                {
                     obj.Hit(_damage);
-                    Destroy(gameObject);
-                }
             }
 
             AudioClip clip = _audioClipsImpact[Random.Range(0, _audioClipsImpact.Length)];
             _audioSource.clip = clip;
-            Debug.Log(_audioSource.clip);
             _audioSource.Play();
 
             StartCoroutine(LightFlash());
+
+            Destroy(gameObject);
         }
 
 

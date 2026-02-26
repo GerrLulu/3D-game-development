@@ -16,10 +16,7 @@ namespace Daytime
         private Vector3 _defaultAngles;
 
 
-        private void Start()
-        {
-            _defaultAngles = _dirLight.transform.localEulerAngles;
-        }
+        private void Start() => _defaultAngles = _dirLight.transform.localEulerAngles;
 
         private void Update()
         {

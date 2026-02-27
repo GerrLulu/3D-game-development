@@ -882,7 +882,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 971649438762375924}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 320b1c2af77554f99a1658df4a6d3d5c, type: 3}
+  m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 29031388fd7210648839f7a57a4d711d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -1199,6 +1199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hp: 100
+  _maxHP: 100
   _timeAnimDie: 5
   _speed: 0.1
   _boost: 1.5

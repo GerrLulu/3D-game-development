@@ -64,7 +64,7 @@ namespace Enemies
             _rayToPlayer = new Ray(_eyePosition.position, direction);
             Physics.Raycast(_rayToPlayer, out hit);
 
-            if (hit.collider != null || _isDead == false)
+            if (hit.collider != null && _isDead == false)
             {
                 if (_attackDistance <= hit.distance && hit.distance <= _huntingDistance)
                 {
@@ -88,7 +88,7 @@ namespace Enemies
 
         private void Patrol()
         {
-            _animator.SetBool("IsRun", false);
+            _agent.speed = _speedWalk;
 
             if (_agent.remainingDistance < _agent.stoppingDistance)
             {

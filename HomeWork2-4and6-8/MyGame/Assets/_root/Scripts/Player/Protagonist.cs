@@ -1,5 +1,6 @@
 using Bullet;
 using Doors;
+using Item;
 using MineItem;
 using System.Collections;
 using UnityEngine;
@@ -9,9 +10,10 @@ using UnityEngine.UI;
 
 namespace Player
 {
-    public class Protagonist : MonoBehaviour, IMineExplosion, IBulletDamage
+    public class Protagonist : MonoBehaviour, IMineExplosion, IBulletDamage, IHeal
     {
         [SerializeField] private int _hp;
+        [SerializeField] private int _maxHP;
         [SerializeField] private int _timeAnimDie;
 
         [SerializeField] private float _speed;
@@ -209,9 +211,15 @@ namespace Player
             _rb.AddForce(direction.normalized * force, ForceMode.Impulse);
         }
 
+        public void Heal(int hp) => ChangeHealthPoint(hp);
+
         private void ChangeHealthPoint(int changeHP)
         {
            _hp = _hp + changeHP;
+
+            if (_hp > _maxHP)
+                _hp = _maxHP;
+
            _sliderHP.value = _hp;
 
             if (_hp <= 0)
@@ -290,5 +298,6 @@ namespace Player
             _blueCardImg.SetActive(false);
             _panelGameOver.SetActive(true);
         }
+
     }
 }

@@ -1,4 +1,4 @@
-# 3Dgame_development_GeekBrains
+# 3D game development
 ## Homework for Geekbrains
 
 
